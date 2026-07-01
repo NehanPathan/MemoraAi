@@ -1,0 +1,133 @@
+version: '3.9'
+
+services:
+  # ════════════════════════════════════════════════════════════════
+  # 📦 BACKEND SERVICE (FastAPI)
+  # ════════════════════════════════════════════════════════════════
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: memoraai-backend
+    ports:
+      - "8000:8000"
+    environment:
+      # Application Environment
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+      LOG_LEVEL: ${LOG_LEVEL:-DEBUG}
+      LOG_FORMAT: ${LOG_FORMAT:-text}
+
+      # Google OAuth2 Configuration
+      GOOGLE_OAUTH_CLIENT_ID: ${GOOGLE_OAUTH_CLIENT_ID}
+      GOOGLE_OAUTH_CLIENT_SECRET: ${GOOGLE_OAUTH_CLIENT_SECRET}
+
+      # Required API Keys
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      IMAGEKIT_PRIVATE_KEY: ${IMAGEKIT_PRIVATE_KEY}
+      IMAGEKIT_PUBLIC_KEY: ${IMAGEKIT_PUBLIC_KEY}
+      IMAGEKIT_URL_ENDPOINT: ${IMAGEKIT_URL_ENDPOINT}
+
+      # JWT Configuration
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION_HOURS: ${JWT_EXPIRATION_HOURS:-24}
+
+      # Database (SQLite for development, PostgreSQL for production)
+      DATABASE_URL: ${DATABASE_URL:-sqlite:///./memoriesbuilder.db}
+
+      # CORS Configuration
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://frontend:5173}
+
+      # Security & Limits
+      MAX_REQUEST_SIZE: ${MAX_REQUEST_SIZE:-52428800}
+      MAX_UPLOAD_BYTES: ${MAX_UPLOAD_BYTES:-10485760}
+      RATE_LIMIT_REQUESTS: ${RATE_LIMIT_REQUESTS:-100}
+      RATE_LIMIT_WINDOW: ${RATE_LIMIT_WINDOW:-3600}
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - backend-db:/app/data
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - memoraai-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: memoraai-postgres
+    environment:
+      POSTGRES_USER: memoraai
+      POSTGRES_PASSWORD: secure_password
+      POSTGRES_DB: memoraai
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U memoraai"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - memoraai-network
+    restart: unless-stopped
+
+  # ════════════════════════════════════════════════════════════════
+  # 🎨 FRONTEND SERVICE (React + Vite)
+  # ════════════════════════════════════════════════════════════════
+  frontend:
+    build:
+      context: ./memoraai-frontend
+      dockerfile: Dockerfile.dev
+      args:
+        VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID}
+        VITE_API_URL: ${VITE_API_URL:-http://backend:8000}
+    container_name: memoraai-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      # Google OAuth2 Configuration
+      VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID}
+
+      # API Configuration
+      VITE_API_URL: ${VITE_API_URL:-http://backend:8000}
+    volumes:
+      - ./memoraai-frontend:/app
+      - /app/node_modules
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - memoraai-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5173"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+# ════════════════════════════════════════════════════════════════
+# 📦 VOLUMES
+# ════════════════════════════════════════════════════════════════
+volumes:
+  postgres_data:
+    driver: local
+  backend-db:
+    driver: local
+
+# ════════════════════════════════════════════════════════════════
+# 🌐 NETWORKS
+# ════════════════════════════════════════════════════════════════
+networks:
+  memoraai-network:
+    driver: bridge

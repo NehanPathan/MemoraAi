@@ -1,0 +1,182 @@
+# ════════════════════════════════════════════════════════════════
+# 🎨 Frontend Docker Ignore
+# ════════════════════════════════════════════════════════════════
+# Files/directories to exclude from Docker build context
+# ════════════════════════════════════════════════════════════════
+
+# ════════════════════════════════════════════════════════════════
+# 📦 Node.js & Package Management
+# ════════════════════════════════════════════════════════════════
+node_modules/
+npm-debug.log
+npm-debug.log.*
+yarn-error.log
+pnpm-debug.log
+pnpm-debug.log.*
+.pnpm-store
+package-lock.json
+yarn.lock
+pnpm-lock.yaml.bak
+dist/
+build/
+
+# ════════════════════════════════════════════════════════════════
+# 🔐 Environment & Secrets
+# ════════════════════════════════════════════════════════════════
+.env
+.env.local
+.env.*.local
+.env.production
+.env.staging
+!.env.example
+secrets/
+.secrets/
+
+# ════════════════════════════════════════════════════════════════
+# 🗂️ IDE & Editor
+# ════════════════════════════════════════════════════════════════
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.project
+.pydevproject
+.settings/
+*.sublime-project
+*.sublime-workspace
+.vim/
+.emacs*
+.prettierrc
+.eslintrc
+.eslintignore
+tsconfig.json
+
+# ════════════════════════════════════════════════════════════════
+# 📝 Logs
+# ════════════════════════════════════════════════════════════════
+logs/
+*.log
+*.log.*
+lerna-debug.log
+
+# ════════════════════════════════════════════════════════════════
+# 🔧 Version Control
+# ════════════════════════════════════════════════════════════════
+.git
+.gitignore
+.gitattributes
+.github/
+.gitkeep
+
+# ════════════════════════════════════════════════════════════════
+# 📦 Build & CI/CD
+# ════════════════════════════════════════════════════════════════
+.gitlab-ci.yml
+.travis.yml
+Jenkinsfile
+.circleci/
+.github/workflows/
+docker-compose.*.yml
+Dockerfile*
+.dockerignore
+Makefile
+makefile
+
+# ════════════════════════════════════════════════════════════════
+# 📚 Documentation & Test Files
+# ════════════════════════════════════════════════════════════════
+README.md
+CHANGELOG.md
+LICENSE
+docs/
+tests/
+test/
+__tests__/
+*.md
+.test/
+coverage/
+.coverage
+
+# ════════════════════════════════════════════════════════════════
+# 🚫 Large Files
+# ════════════════════════════════════════════════════════════════
+*.tar
+*.tar.gz
+*.zip
+*.rar
+*.7z
+*.dmg
+
+# ════════════════════════════════════════════════════════════════
+# 📂 Cache & Temporary
+# ════════════════════════════════════════════════════════════════
+.cache/
+.tmp/
+temp/
+tmp/
+*.tmp
+.next/
+.nuxt/
+.vuepress/dist/
+.serverless/
+.fusebox/
+.dynamodb/
+.tern-port
+.vueuse-cache
+
+# ════════════════════════════════════════════════════════════════
+# 🔍 Development
+# ════════════════════════════════════════════════════════════════
+.vscode-server
+.vscode-remote
+remote-repo/
+.storybook/
+storybook-static/
+
+# ════════════════════════════════════════════════════════════════
+# 📱 System
+# ════════════════════════════════════════════════════════════════
+.DS_Store
+Thumbs.db
+*.bak
+*~
+.~*
+.AppleDouble
+.LSOverride
+
+# ════════════════════════════════════════════════════════════════
+# 🔐 Sensitive Files
+# ════════════════════════════════════════════════════════════════
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+.ssh/
+credentials.json
+private_key.json
+
+# ════════════════════════════════════════════════════════════════
+# 🎨 Build Output (keep out of Docker context)
+# ════════════════════════════════════════════════════════════════
+dist/
+build/
+out/
+.out/
+public/cache/
+
+# ════════════════════════════════════════════════════════════════
+# 🔍 Testing & Coverage
+# ════════════════════════════════════════════════════════════════
+coverage/
+.nyc_output/
+*.lcov
+
+# ════════════════════════════════════════════════════════════════
+# 🐳 Docker files (not needed in context)
+# ════════════════════════════════════════════════════════════════
+.docker/
+docker-compose.yml
+docker-compose.*.yml
